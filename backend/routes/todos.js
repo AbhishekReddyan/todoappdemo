@@ -56,18 +56,10 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE a todo
-router.delete('/:id', async (req, res) => {
-  const id = req.params.id;
-  try {
-    const result = await pool.query('DELETE FROM todos WHERE id = $1 RETURNING *', [id]);
-    if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
-  }
-});
+/*
+  IMPORTANT: register the static '/completed' route BEFORE the parameterized '/:id' route.
+  This prevents 'completed' from being treated as an id.
+*/
 
 // DELETE all completed todos
 router.delete('/completed', async (req, res) => {
@@ -81,6 +73,17 @@ router.delete('/completed', async (req, res) => {
   }
 });
 
-
+// DELETE a todo (keep after /completed)
+router.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await pool.query('DELETE FROM todos WHERE id = $1 RETURNING *', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
 module.exports = router;

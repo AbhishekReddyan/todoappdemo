@@ -73,12 +73,14 @@ router.delete('/:id', async (req, res) => {
 router.delete('/completed', async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM todos WHERE completed = true RETURNING *');
+    // return number deleted so client can react
     res.json({ deleted: result.rowCount });
   } catch (err) {
-    console.error(err);
+    console.error('DELETE /todos/completed error:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
+
 
 
 module.exports = router;

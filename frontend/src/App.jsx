@@ -31,10 +31,14 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title }),
       });
-      if (!res.ok) throw new Error('Create failed');
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Create failed: ${res.status} ${txt}`);
+      }
       await fetchTodos();
     } catch (err) {
       console.error('Add todo error', err);
+      alert('Could not add todo. See console for details.');
     }
   };
 
@@ -79,12 +83,21 @@ export default function App() {
   };
 
   const clearCompleted = async () => {
+    // confirmation to avoid accidental deletes
+    if (!confirm('Delete all completed todos?')) return;
     try {
       const res = await fetch(`${API}/todos/completed`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Clear completed failed');
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Clear failed: ${res.status} ${txt}`);
+      }
+      const json = await res.json();
+      console.log('Cleared completed:', json);
+      // re-fetch to update UI
       await fetchTodos();
     } catch (err) {
       console.error('Clear completed failed', err);
+      alert('Could not clear completed todos. See console for details.');
     }
   };
 
@@ -95,22 +108,26 @@ export default function App() {
   });
 
   return (
-    <div style={{ maxWidth: 700, margin: '40px auto', padding: 20, fontFamily: 'Arial, sans-serif' }}>
-      <h1>Todo App</h1>
+    <div className="app-root">
+      <div className="todo-card">
+        <h1 className="title">Todo App</h1>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div>
-          <button onClick={() => setFilter('all')} style={{ marginRight: 8, padding: '6px 10px' }}>All</button>
-          <button onClick={() => setFilter('active')} style={{ marginRight: 8, padding: '6px 10px' }}>Active</button>
-          <button onClick={() => setFilter('completed')} style={{ padding: '6px 10px' }}>Completed</button>
+        <AddTodo onAdd={addTodo} />
+
+        {/* FILTERS under the input */}
+        <div className="filter-row">
+          <div className="filter-buttons">
+            <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All</button>
+            <button className={`filter-btn ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>Active</button>
+            <button className={`filter-btn ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Completed</button>
+          </div>
+          <div>
+            <button className="clear-btn" onClick={clearCompleted}>Clear completed</button>
+          </div>
         </div>
-        <div>
-          <button onClick={clearCompleted} style={{ padding: '6px 10px' }}>Clear completed</button>
-        </div>
+
+        {loading ? <p>Loading...</p> : <TodoList todos={filtered} onToggle={toggleTodo} onDelete={deleteTodo} onEdit={editTodo} />}
       </div>
-
-      <AddTodo onAdd={addTodo} />
-      {loading ? <p>Loading...</p> : <TodoList todos={filtered} onToggle={toggleTodo} onDelete={deleteTodo} onEdit={editTodo} />}
     </div>
   );
 }

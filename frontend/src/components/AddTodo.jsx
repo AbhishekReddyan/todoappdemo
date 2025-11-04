@@ -9,14 +9,15 @@ export default function AddTodo({ onAdd }) {
     setTitle('');
   };
   return (
-    <form onSubmit={submit} style={{ marginBottom: 20 }}>
+    <form onSubmit={submit} style={{ marginBottom: 8, display: 'flex', gap: 8 }}>
       <input
+        type="text"
         value={title}
         onChange={e => setTitle(e.target.value)}
         placeholder="Add a new todo"
-        style={{ padding: '8px', width: '70%' }}
+        style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid #e6edf8' }}
       />
-      <button style={{ padding: '8px 12px', marginLeft: 8 }} type="submit">Add</button>
+      <button style={{ background: '#0d6efd', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: 8 }}>Add</button>
     </form>
   );
 }

@@ -1,1 +1,86 @@
-body { background: #fafafa; }
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --muted:#6b6b6b;
+  --accent:#0d6efd;
+  --btn-bg:#ffffff;
+  --btn-border:#ddd;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+  min-height: 100vh;
+  color: #222;
+}
+
+/* center container */
+.app-root {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+/* card */
+.todo-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(18, 38, 63, 0.08);
+  padding: 20px 24px;
+}
+
+/* title */
+.title {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+}
+
+/* AddTodo input style (if you used earlier AddTodo, it will still work) */
+input[type="text"] {
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  outline: none;
+}
+input[type="text"]:focus { box-shadow: 0 0 0 3px rgba(13,110,253,0.08); }
+
+/* filter row layout */
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0 18px 0;
+}
+
+/* filter buttons */
+.filter-buttons { display: flex; gap: 8px; }
+.filter-btn {
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* clear button */
+.clear-btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* todo list item styles (improve spacing) */
+ul { margin: 0; padding: 0; list-style: none; }
+li { display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid #f1f3f5; }
+li div span { font-size: 15px; }
+button { cursor: pointer; }

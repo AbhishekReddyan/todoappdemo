@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: todo_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - todo-network
+
+  backend:
+    build: ./backend
+    environment:
+      PORT: 4000
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: postgres_password
+      PGDATABASE: todo_app
+      PGPORT: 5432
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    networks:
+      - todo-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80" # maps nginx 80 to host 5173 for convenience
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+
+volumes:
+  pgdata:
+
+networks:
+  todo-network:
+    driver: bridge

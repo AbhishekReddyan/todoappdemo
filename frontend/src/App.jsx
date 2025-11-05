@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TodoList from './components/TodoList';
 import AddTodo from './components/AddTodo';
 
-const API = import.meta.env.VITE_API_URL || 'http://192.168.31.51:4000/api';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export default function App() {
   const [todos, setTodos] = useState([]);

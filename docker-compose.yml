@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: todo-db
+    environment:
+      POSTGRES_DB: todoapp
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    container_name: todo-api
+    environment:
+      NODE_ENV: production
+      PGHOST: db
+      PGUSER: todo_user
+      PGPASSWORD: todo_pass
+      PGDATABASE: todoapp
+      PGPORT: "5432"
+      CORS_ORIGIN: http://localhost
+      PORT: "3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: ./frontend
+    container_name: todo-web
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    # If you keep nginx.conf in frontend/, this mounts it at runtime (optional)
+    # volumes:
+    #   - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
